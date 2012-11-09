@@ -13,7 +13,7 @@ namespace XRazor.ViewPages
         public override void InitHelpers()
         {
             base.InitHelpers();
-            Xsl = new XslHelper<TModel>(base.ViewContext, this);
+            Xsl = new XslHelper<TModel>(ViewContext, this);
         }
     }
 }

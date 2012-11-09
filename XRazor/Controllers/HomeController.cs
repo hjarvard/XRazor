@@ -18,9 +18,7 @@ namespace XRazor.Controllers
 			var model = new IndexPageViewModel();
 			model.Greeting = "Hello world!";
 
-			var context = new ObjectXPathContext();
-			var xpathNavigator = context.CreateNavigator(model);
-            return View(xpathNavigator);
+            return View(model);
         }
 
     }

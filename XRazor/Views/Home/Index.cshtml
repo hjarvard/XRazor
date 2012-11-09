@@ -1,10 +1,14 @@
-﻿@model dynamic
+﻿@model XRazor.Models.IndexPageViewModel
 
 @{
     ViewBag.Title = "Index";
     var xrazor = new XRazor.Extensions.XRazor();
 
-    xrazor.Match("/IndexPageViewModel/Greeting", @<h1>@item</h1>);                             
+    //xrazor.Match("/IndexPageViewModel/Greeting", @<h1>@item</h1>);                             
 }
 
-@xrazor.ApplyForModel(Model)
+
+@Xsl.Match("IndexPageViewModel", @<h3>@Xsl.ValueOf("Greeting")</h3>)
+
+
+@Xsl.ApplyTemplates("/")
