@@ -14,9 +14,7 @@ namespace XRazor.ViewPages
 	{
 		private ViewContext _viewContext;
 		private XsltWebViewPage<TModel> _xsltWebViewPage;
-
 		private Stack<XPathNavigator> _navigatorsStack;
-
 		private List<TemplateRule> _templateRules;
 
 		public XslHelper(ViewContext viewContext, XsltWebViewPage<TModel> xsltWebViewPage)
@@ -75,7 +73,7 @@ namespace XRazor.ViewPages
 		{
 			return new HelperResult(writer =>
 										{
-											writer.Write(_navigatorsStack.Peek().SelectSingleNode((typeof(TModel).Name) + "/" + xpath).Value);
+											writer.Write(_navigatorsStack.Peek().SelectSingleNode(xpath).Value);
 										});
 		}
 
@@ -83,6 +81,5 @@ namespace XRazor.ViewPages
 		{
 			_templateRules.Add(new TemplateRule(xpath, template));
 		}
-
 	}
 }

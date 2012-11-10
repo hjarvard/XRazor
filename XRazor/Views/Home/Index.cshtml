@@ -1,8 +1,7 @@
 ﻿@model XRazor.Models.IndexPageViewModel
 
 @{
-    ViewBag.Title = "Index";
-    //var xrazor = new XRazor.Extensions.XRazor();
+    Model.Title = "Index";
 }
 
 @Xsl.Match("/",
@@ -20,6 +19,7 @@
 @Xsl.Match("IndexPageViewModel",
     @<text>
         <h3>@item.Greeting</h3>
+        <h4>@Xsl.ValueOf("Title")</h4>
     </text>)
 
 

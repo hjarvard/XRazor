@@ -7,7 +7,7 @@ namespace XRazor.Models
 {
 	public class IndexPageViewModel
 	{
-
+		public string Title { get; set; }
 		public string Greeting { get; set; }
 	}
 }
