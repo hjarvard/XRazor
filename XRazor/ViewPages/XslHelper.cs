@@ -6,70 +6,84 @@ using System.Web.Mvc;
 using System.Web.WebPages;
 using System.Xml.XPath;
 using sdf.XPath;
+using System.IO;
 
 namespace XRazor.ViewPages
 {
-    public class XslHelper<TModel> where TModel : class
-    {
-        private ViewContext _viewContext;
-        private XsltWebViewPage<TModel> _xsltWebViewPage;
-        private Dictionary<string, Func<XslHelper<TModel>, HelperResult>> _matchDictionary;
-        private XPathNavigator _xPathNavigator;
+	public class XslHelper<TModel> where TModel : class
+	{
+		private ViewContext _viewContext;
+		private XsltWebViewPage<TModel> _xsltWebViewPage;
 
-        public XslHelper(ViewContext viewContext, XsltWebViewPage<TModel> xsltWebViewPage)
-            : this(viewContext, xsltWebViewPage, null)
-        {
-          
-        }
+		private Stack<XPathNavigator> _navigatorsStack;
 
-        public XslHelper(ViewContext viewContext, XsltWebViewPage<TModel> xsltWebViewPage, XPathNavigator xPathNavigator)
-        {
-            var context = new ObjectXPathContext();
-            _matchDictionary = new Dictionary<string, Func<XslHelper<TModel>, HelperResult>>();
-            _viewContext = viewContext;
-            _xsltWebViewPage = xsltWebViewPage;
-            _xPathNavigator = xPathNavigator ?? context.CreateNavigator(_xsltWebViewPage.Model);
-        } 
+		private List<TemplateRule> _templateRules;
 
-        public HelperResult Match(string xpath, Func<XslHelper<TModel>, HelperResult> template)
-        {
-            RegisterMatch(xpath, template);
-            return new HelperResult(writer =>
-                                        {
-                                            
-                                        });
-        }
+		public XslHelper(ViewContext viewContext, XsltWebViewPage<TModel> xsltWebViewPage)
+			: this(viewContext, xsltWebViewPage, null)
+		{
 
-        public HelperResult ApplyTemplates(string xpath)
-        {
+		}
 
-            return new HelperResult(writer =>
-            {
-                foreach (var item in _matchDictionary)
-                {
-                    var nav = _xPathNavigator.Clone();
-                    nav.MoveToChild(item.Key, "");
-                    var xslHelper = new XslHelper<TModel>(_viewContext, _xsltWebViewPage, nav);
-                    item.Value(xslHelper).WriteTo(writer);
-                }
-            });
-        }
+		public XslHelper(ViewContext viewContext, XsltWebViewPage<TModel> xsltWebViewPage, XPathNavigator xPathNavigator)
+		{
+			_navigatorsStack = new Stack<XPathNavigator>();
+			_templateRules = new List<TemplateRule>();
+			var context = new ObjectXPathContext();
+			_viewContext = viewContext;
+			_xsltWebViewPage = xsltWebViewPage;
+			_navigatorsStack.Push(xPathNavigator ?? context.CreateNavigator(_xsltWebViewPage.Model));
+		}
 
-        public HelperResult ValueOf(string xpath)
-        {
-            return new HelperResult(writer =>
-                                        {
-                                            writer.Write(_xPathNavigator.SelectSingleNode((typeof(TModel).Name) + "/" + xpath).Value);
-                                        });
-        }
+		public HelperResult Match(string xpath, Func<dynamic, HelperResult> template)
+		{
+			RegisterMatch(xpath, template);
+			return new HelperResult(writer => { });
+		}
 
-        private void RegisterMatch(string xpath, Func<XslHelper<TModel>, HelperResult> template)
-        {
-            if (!_matchDictionary.ContainsKey(xpath))
-            {
-                _matchDictionary.Add(xpath, template);
-            }
-        }
+		public HelperResult ApplyTemplates()
+		{
+			return ApplyTemplates("/");
+		}
 
-    }
+		public HelperResult ApplyTemplates(string xpath)
+		{
+
+			var stringWriter = new StringWriter();
+			var nodes = _navigatorsStack.Peek().Select(xpath);
+
+			while (nodes.MoveNext())
+			{
+				var navigator = nodes.Current;
+				_navigatorsStack.Push(navigator);
+				foreach (var templateRule in _templateRules)
+				{
+					if (navigator.Matches(templateRule.XPath))
+					{
+						templateRule.Template(_xsltWebViewPage.Model).WriteTo(stringWriter);
+					}
+				}
+				_navigatorsStack.Pop();
+			}
+
+			return new HelperResult(writer =>
+			{
+				writer.Write(stringWriter);
+			});
+		}
+
+		public HelperResult ValueOf(string xpath)
+		{
+			return new HelperResult(writer =>
+										{
+											writer.Write(_navigatorsStack.Peek().SelectSingleNode((typeof(TModel).Name) + "/" + xpath).Value);
+										});
+		}
+
+		private void RegisterMatch(string xpath, Func<dynamic, HelperResult> template)
+		{
+			_templateRules.Add(new TemplateRule(xpath, template));
+		}
+
+	}
 }

@@ -2,13 +2,19 @@
 
 @{
     ViewBag.Title = "Index";
-    var xrazor = new XRazor.Extensions.XRazor();
-
-    //xrazor.Match("/IndexPageViewModel/Greeting", @<h1>@item</h1>);                             
+    //var xrazor = new XRazor.Extensions.XRazor();
 }
 
+@Xsl.Match("/",
+    @<text>
+        <div>
+            @Xsl.ApplyTemplates("IndexPageViewModel")
+        </div>
+    </text>)
 
-@Xsl.Match("IndexPageViewModel", @<h3>@Xsl.ValueOf("Greeting")</h3>)
-
+@Xsl.Match("IndexPageViewModel",
+    @<text>
+        <h3>@item.Greeting</h3>
+    </text>)
 
 @Xsl.ApplyTemplates("/")
