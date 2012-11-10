@@ -133,6 +133,7 @@
     </Compile>
     <Compile Include="Models\IndexPageViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewPages\TemplateRule.cs" />
     <Compile Include="ViewPages\XslHelper.cs" />
     <Compile Include="ViewPages\XsltWebViewPage.cs" />
   </ItemGroup>
