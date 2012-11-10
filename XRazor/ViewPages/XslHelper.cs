@@ -60,7 +60,7 @@ namespace XRazor.ViewPages
 				{
 					if (navigator.Matches(templateRule.XPath))
 					{
-						templateRule.Template(_xsltWebViewPage.Model).WriteTo(stringWriter);
+						templateRule.Template(navigator.UnderlyingObject).WriteTo(stringWriter);
 					}
 				}
 				_navigatorsStack.Pop();
