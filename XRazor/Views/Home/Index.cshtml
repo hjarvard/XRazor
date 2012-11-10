@@ -7,14 +7,21 @@
 
 @Xsl.Match("/",
     @<text>
-        <div>
-            @Xsl.ApplyTemplates("IndexPageViewModel")
+        <div style="border-bottom: 1px solid #000;">
+            @Xsl.ApplyTemplates()
         </div>
+    </text>)
+
+@Xsl.Match("IndexPageViewModel",
+    @<text>
+        <h1>@item.Greeting</h1>
     </text>)
 
 @Xsl.Match("IndexPageViewModel",
     @<text>
         <h3>@item.Greeting</h3>
     </text>)
+
+
 
 @Xsl.ApplyTemplates("/")

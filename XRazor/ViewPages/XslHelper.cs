@@ -43,12 +43,11 @@ namespace XRazor.ViewPages
 
 		public HelperResult ApplyTemplates()
 		{
-			return ApplyTemplates("/");
+			return ApplyTemplates("node()");
 		}
 
 		public HelperResult ApplyTemplates(string xpath)
 		{
-
 			var stringWriter = new StringWriter();
 			var nodes = _navigatorsStack.Peek().Select(xpath);
 
